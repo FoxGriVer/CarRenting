@@ -1,0 +1,70 @@
+﻿@model TransportRentalSystem.ViewModels.RentingCar.RentingViewModel
+@{
+                /**/
+
+                ViewBag.Title = "RentTransport";
+                var X = Html.X();
+}
+
+<div >
+    <div class="col-lg-offset-5">
+        <h1>Бронирование автомобиля</h1>
+        @using (Html.BeginForm("RentTransport", "Renting", FormMethod.Post))
+        {
+            @Html.LabelFor(m => m.CalendarViewModel.Title, "Заголовок");
+            <br />
+            @Html.TextBoxFor(m => m.CalendarViewModel.Title);
+            <br /><br />
+
+            @Html.LabelFor(m => m.CalendarViewModel.StartDateTime, "Дата начала");
+            <br />
+            @Html.TextBoxFor(m => m.CalendarViewModel.StartDateTime);
+            <br /><br />
+
+            @Html.LabelFor(m => m.CalendarViewModel.EndDateTime, "Дата Окончания");
+            <br />
+            @Html.TextBoxFor(m => m.CalendarViewModel.EndDateTime);
+            <br /><br />
+
+            @Html.LabelFor(m => m.Auto, "Автомобиль");
+            <br />
+            @Html.DropDownListFor(m => m.Auto,
+            new SelectList(Model.Autos, "CAR_ID", "CAR_TYPE"), "- Please Select -");
+            <br /><br />
+
+            @Html.LabelFor(m => m.Driver, "Водитель");
+            <br />
+            @Html.DropDownListFor(m => m.Driver,
+            new SelectList(Model.Drivers, "DRIVER_ID", "FIO"), "- Please Select -");
+            <br /><br />
+
+            @Html.LabelFor(m => m.PointSending, "Точка отправления");
+            <br />
+            @Html.DropDownListFor(m => m.PointSending,
+            new SelectList(Model.TransportPoints, "DESTINATION_POINT_ID", "TEXT"), "- Please Select -");
+            <br /><br />
+
+            @Html.LabelFor(m => m.PointArrival, "Точка прибытия");
+            <br />
+            @Html.DropDownListFor(m => m.PointArrival,
+            new SelectList(Model.TransportPoints, "DESTINATION_POINT_ID", "TEXT"), "- Please Select -");
+            <br /><br />
+
+            @Html.LabelFor(m => m.Notes, "Комментарий");
+            <br />
+            @Html.TextBoxFor(m => m.Notes);
+            <br /><br />
+
+            @Html.LabelFor(m => m.Status, "Статус");
+            <br />
+            @Html.DropDownListFor(m => m.Status,
+            new SelectList(Model.Statuses, "STATUS_ID", "TEXT"), "- Please Select -");
+            @*@Html.TextBoxFor(m => m.CalendarViewModel.CalendarId);*@
+            <br /><br />
+
+            <p><input class="btn btn-primary" type="submit" value="Забронировать" /></p>
+        }
+
+    </div>        
+</div>
+

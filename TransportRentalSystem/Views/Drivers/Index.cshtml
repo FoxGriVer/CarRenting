@@ -1,0 +1,148 @@
+﻿@model IEnumerable<Models.DataBaseModels.Driver>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_BaseLayout.cshtml";
+}
+
+@section headtag
+{
+    <script>
+        var updateRecord = function (form) {
+            if (form.getForm()._record == null) {
+                return;
+            }
+
+            if (!form.getForm().isValid()) {
+                Ext.net.Notification.show({
+                    iconCls: "icon-exclamation",
+                    html: "Form is invalid",
+                    title: "Error"
+                });
+                return false;
+            }
+
+            form.getForm().updateRecord();
+        };
+
+        var addRecord = function (form, grid) {
+            if (!form.getForm().isValid()) {
+                Ext.net.Notification.show({
+                    iconCls: "icon-exclamation",
+                    html: "Form is invalid",
+                    title: "Error"
+                });
+
+                return false;
+            }
+
+            grid.store.insert(0, new Driver(form.getForm().getValues()));
+            form.getForm().reset();
+        };
+
+        var onStoreException = function (proxy, response, operation) {
+            var error = operation.getError(),
+                message = Ext.isString(error) ? error : ('(' + error.status + ')' + error.statusText);
+
+            Ext.net.Notification.show({
+                iconCls: 'icon-exclamation',
+                html: message + "\n<br /><b>Proxy type:</b> " + proxy.type,
+                title: 'EXCEPTION',
+                autoScroll: true,
+                hideDelay: 5000,
+                width: 300,
+                height: 200
+            });
+        };
+    </script>
+}
+
+@(Html.X().GridPanel()
+                                                    .ID("GridPanel1")
+                                                    .Store(
+                                                        Html.X().StoreForModel()
+                                                            .AutoSync(false)
+                                                            .ShowWarningOnFailure(false)
+                                                            .Listeners(l =>
+                                                            {
+                                                                l.Exception.Fn = "onStoreException";
+                                                                l.Exception.Buffer = 10;
+                                                            })
+                                                            .SyncUrl(Url.Action("HandleChanges"))
+                                                    )
+                                                    .Icon(Icon.Table)
+                                                    .Frame(true)
+                                                    .Title("Водители")
+         .StyleSpec("margin-top: 10px;")
+                                                    .ColumnModel(
+                                                        Html.X().ColumnFor(Model, m => m.DRIVER_ID)
+                                                            .ToBuilder<Column.Builder>()
+                                                            .Width(40)
+                                                            .Renderer("return record.phantom ? '' : value;"),
+
+                                                        Html.X().ColumnFor(Model, m => m.FIO)
+                                                            .ToBuilder<Column.Builder>()
+                                                            .Flex(1)
+                                                            .Editor(
+                                                                Html.X().TextField().AllowBlank(false)
+                                                            ),
+
+                                                       Html.X().ColumnFor(Model, m => m.Email)
+                                                            .ToBuilder<Column.Builder>()
+                                                            .Editor(
+                                                                Html.X().TextField().AllowBlank(false).StandardVtype(ValidationType.Email)
+                                                            ),
+
+                                                       Html.X().CommandColumn()
+                                                           .Width(70)
+                                                           .Commands(
+                                                                Html.X().GridCommand()
+                                                                    .Text("Отменить")
+                                                                    .ToolTip(t =>
+                                                                    {
+                                                                        t.Text = "Reject row changes";
+                                                                    })
+                                                                    .CommandName("reject")
+                                                                    .Icon(Icon.ArrowUndo)
+                                                           )
+                                                           .PrepareToolbar(t =>
+                                                           {
+                                                               t.Handler = "toolbar.items.get(0).setVisible(record.dirty);";
+                                                           })
+                                                           .Listeners(l =>
+                                                           {
+                                                               l.Command.Handler = "record.reject();";
+                                                           })
+                                                    )
+                                                    .TopBar(
+                                                        Html.X().Toolbar()
+                                                            .Items(
+                                                                Html.X().Button()
+                                                                    .Text("Добавить")
+                                                                    .Icon(Icon.Add)
+                                                                    .Handler("this.up('grid').store.insert(0, new Driver());"),
+
+                                                                Html.X().Button()
+                                                                    .Text("Удалить")
+                                                                    .Icon(Icon.Exclamation)
+                                                                    .Handler("this.up('grid').deleteSelected(); App.UserForm.getForm().reset();")
+                                                            )
+                                                    )
+                                                    .SelectionModel(
+                                                        Html.X().RowSelectionModel()
+                                                            .Mode(SelectionMode.Single)
+                                                            .Listeners(l =>
+                                                            {
+                                                                l.Select.Handler = "App.UserForm.getForm().loadRecord(record); App.UserForm.defaultButton='0';";
+                                                            })
+                                                    )
+                                                    .Buttons(
+                                                        Html.X().Button()
+                                                            .Text("Сохранить")
+                                                            .Icon(Icon.Disk)
+                                                            .Handler("this.up('grid').store.sync();")
+                                                    )
+                                                    .Plugins(
+                                                        Html.X().CellEditing()
+                                                    )
+)

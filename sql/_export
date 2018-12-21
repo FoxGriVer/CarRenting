@@ -1,0 +1,1 @@
+expdp sys as sysbda/password@XE   version=18 schemas=CODERLINK_DIV dumpfile=CODERLINK_DIV.dmp logfile=expdpCODERLINK_DIV.log 

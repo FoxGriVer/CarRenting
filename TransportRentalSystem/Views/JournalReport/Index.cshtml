@@ -1,0 +1,103 @@
+﻿@model IEnumerable<Models.DataBaseModels.JournalReport>
+
+@{
+    /**/
+
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_BaseLayout.cshtml";
+}
+
+@section headtag
+    {
+    <script>
+        var template = '<span style="color:{0};">{1}</span>';
+
+        var change = function (value) {
+            return Ext.String.format(template, (value > 0) ? "green" : "red", value);
+        };
+
+        var pctChange = function (value) {
+            return Ext.String.format(template, (value > 0) ? "green" : "red", value + "%");
+        };
+
+        var onComboBoxSelect = function (item, records) {
+            var store = App.GridPanel1.getStore(),
+                curPageSize = store.pageSize,
+                wantedPageSize = parseInt(item.getValue(), 10);
+
+            if (wantedPageSize != curPageSize) {
+                store.pageSize = wantedPageSize;
+                store.reload();
+            }
+        };
+    </script>
+}
+
+<h2 class="text-center">
+    Журнал бронирований
+</h2>
+
+@(Html.X().GridPanel()
+                                                                                .ID("GridPanel1")
+                                                                                .Title("Array Grid")
+                                                                                .Store(
+                                                                                Html.X().Store()
+                                                                                .PageSize(20)
+                                                                                .DataSource(Model)
+                                                                                .Model(
+                                                                                Html.X().Model()
+                                                                                .Fields(
+                                                                                new ModelField("FIO_DECLARANT", ModelFieldType.String),
+                                                                                new ModelField("MARK", ModelFieldType.String),
+                                                                                new ModelField("MODEL", ModelFieldType.String),
+                                                                                new ModelField("GOVERNMENT_NUMBER", ModelFieldType.String),
+                                                                                new ModelField("FIO", ModelFieldType.String),
+                                                                                new ModelField("EMAIL", ModelFieldType.String),
+                                                                                new ModelField("POINT_START", ModelFieldType.String),
+                                                                                new ModelField("POINT_END", ModelFieldType.String),
+                                                                                new ModelField("DEPARTURE_TIME", ModelFieldType.Date),
+                                                                                new ModelField("ARRIVAL_TIME", ModelFieldType.Date),
+                                                                                new ModelField("STATUS", ModelFieldType.String)
+                                                                                )
+                                                                                )
+                                                                                .ServerProxy(
+                                                                                Html.X().AjaxProxy()
+                                                                                .Url(Url.Action("GetData"))
+                                                                                )
+                                                                                )
+                                                                                .ColumnModel(
+                                                                                Html.X().RowNumbererColumn(),
+                                                                                Html.X().Column().Text("FIO_DECLARANT").DataIndex("FIO_DECLARANT").Width(300),
+                                                                                Html.X().Column().Text("MARK").DataIndex("MARK").Width(100),
+                                                                                Html.X().Column().Text("MODEL").DataIndex("MODEL").Width(100),
+                                                                                Html.X().Column().Text("GOVERNMENT_NUMBER").DataIndex("GOVERNMENT_NUMBER").Width(100),
+                                                                                Html.X().Column().Text("FIO").DataIndex("FIO").Width(100),
+                                                                                Html.X().Column().Text("EMAIL").DataIndex("EMAIL").Width(100),
+                                                                                Html.X().Column().Text("POINT_START").DataIndex("POINT_START").Width(100),
+                                                                                Html.X().Column().Text("POINT_END").DataIndex("POINT_END").Width(100),
+                                                                                Html.X().DateColumn().Text("DEPARTURE_TIME").DataIndex("DEPARTURE_TIME").Width(150).Format("HH:mm:ss"),
+                                                                                Html.X().DateColumn().Text("ARRIVAL_TIME").DataIndex("ARRIVAL_TIME").Width(150).Format("HH:mm:ss"),
+
+                                                                                 Html.X().Column().Text("STATUS").DataIndex("STATUS").Width(100)
+                                                                                )
+                                                                                .SelectionModel(
+                                                                                Html.X().RowSelectionModel().Mode(SelectionMode.Multi)
+                                                                                )
+                                                                                .View(Html.X().GridView().StripeRows(true))
+                                                                                .BottomBar(
+                                                                                Html.X().PagingToolbar()
+                                                                                .Items(
+                                                                                Html.X().Label("Количество страниц:"),
+                                                                                Html.X().ToolbarSpacer(20),
+                                                                                Html.X().ComboBox()
+                                                                                .Width(80)
+                                                                                .Items("20", "40", "60")
+                                                                                .SelectedItems("20")
+                                                                                .Listeners(l =>
+                                                                                {
+                                                                                    l.Select.Fn = "onComboBoxSelect";
+                                                                                })
+                                                                                )
+                                                                                .Plugins(Html.X().ProgressBarPager())
+                                                                                )
+)

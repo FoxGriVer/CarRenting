@@ -1,0 +1,224 @@
+﻿@model List<Models.DataBaseModels.Active>
+
+@{
+    ViewBag.Title = "Бронирование автотранспорта для ОМК-ИТ";
+    Layout = "~/Views/Shared/_BaseLayout.cshtml";
+}
+
+@section headtag
+{
+    <script>
+        window.onload = function () {
+            $.ajax({
+                type: "POST",
+                url: "/Home/GetCars",
+                contentType: "application/json; charset=utf-8",
+                async: false,
+                success: function (result, status, xhr) {
+                    //alert(JSON.stringify(result));
+                    $(".cars-select").each(function (index) {
+                        var curId = $(this).find('option:selected').text();
+                        $(this).empty();
+                        var that = $(this)
+                        result.forEach(function (element) {
+                            that.append($("<option></option>")
+                                .attr("value", element.id)
+                                .text(element.value));
+                        });
+                        $(this).find('option').filter(function () {
+                            return this.value === curId
+                        }).prop('selected', true);
+                    });
+                },
+                error: function (xhr, status, error) {
+                    alert("It's failed");
+                }
+            });
+
+            $.ajax({
+                type: "POST",
+                url: "/Home/GetDrivers",
+                contentType: "application/json; charset=utf-8",
+                async: false,
+                success: function (result, status, xhr) {
+                    $(".drivers-select").each(function (index) {
+                        var curId = $(this).find('option:selected').text();
+                        $(this).empty();
+                        var that = $(this)
+                        result.forEach(function (element) {
+                            that.append($("<option></option>")
+                                .attr("value", element.id)
+                                .text(element.value));
+                        });
+                        if (curId === 'Выберите водителя') {
+                            that.append($("<option></option>")
+                                .attr("value", "")
+                                .attr("disabled", true)
+                                .attr("selected", true)
+                                .text('Выберите водителя'));
+                        } else {
+                            that.find('option').filter(function () {
+                                return this.value === curId
+                            }).prop('selected', true);
+                        }
+                    });
+                },
+                error: function (xhr, status, error) {
+                    alert("It's failed");
+                }
+            });
+
+            $(".active-object").each(function (index) {
+                var curStatus = $(this).find('input.hidden-input-status').val();
+                if (curStatus === '2') {
+                    $(this).find('.cars-select').prop('disabled', false);
+                    $(this).find('.drivers-select').prop('disabled', false);
+                    $(this).find('button').text('Активировать');
+                }
+                var that = $(this);
+                $(this).find('button').click(function () {
+                    if ($(this).text() === 'Активировать') {
+                        $(this).text('Деактивировать');
+                        that.find('.cars-select').prop('disabled', true);
+                        that.find('.drivers-select').prop('disabled', true);
+                        that.find('.hidden-input-status').val('1');
+                    } else {
+                        $(this).text('Активировать');
+                        that.find('.cars-select').prop('disabled', false);
+                        that.find('.drivers-select').prop('disabled', false);
+                        that.find('.hidden-input-status').val('2');
+                    }
+                });;
+            });
+        };
+    </script>
+}
+
+<h1 class="text-center">
+    Бронирование автотранспорта для ОМК-ИТ
+</h1>
+
+<div class="row">
+    <div class="col-sm-1"></div>
+    <div class="col-sm-3">
+        @for (int i = 0; i < Model.Count; i += 3)
+        {
+            <div id=@i class="active-object">
+                <input class="hidden-input-active" type="hidden" value=@Model[ i ].ACTIVE_ID.ToString()>
+                <div class="alert alert-info text-center">
+                    ТС бронирования @(i + 1)
+                </div>
+                <form class="form-horizontal" action="#">
+                    <div class="form-group">
+                        <input class="hidden-input-status" type="hidden" value=@Model[ i ].STATUS_ID.ToString()>
+                        <label class="col-sm-4 control-label">Веберите ТС: </label>
+                        <div class="col-sm-8">
+                            <select class="form-control cars-select" disabled>
+                                <option selected>@Model[i].CAR_ID.ToString()</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Веберите водителя: </label>
+                        <div class="col-sm-8">
+                            <select class="form-control drivers-select" disabled>
+                                @if (Model[i].ACTIVE_ID.ToString() == "-1")
+                                {
+                                    <option value="" disabled selected>Выберите водителя</option>
+                                }
+                                else
+                                {
+                                    <option selected>@Model[i].DRIVER_ID.ToString()</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group text-center">
+                        <button type="button" class="btn">Деактивировать</button>
+                    </div>
+                </form>
+            </div>
+        }
+    </div>
+    <div class="col-sm-4">
+        @for (int i = 1; i < Model.Count; i += 3)
+        {
+            <div id=@i class="active-object">
+                <input class="hidden-input-active" type="hidden" value=@Model[ i ].ACTIVE_ID.ToString()>
+                <div class="alert alert-info text-center">
+                    ТС бронирования @(i + 1)
+                </div>
+                <form class="form-horizontal" action="#">
+                    <div class="form-group">
+                        <input class="hidden-input-status" type="hidden" value=@Model[ i ].STATUS_ID.ToString()>
+                        <label class="col-sm-4 control-label">Веберите ТС: </label>
+                        <div class="col-sm-8">
+                            <select class="form-control cars-select" disabled>
+                                <option selected>@Model[i].CAR_ID.ToString()</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Веберите водителя: </label>
+                        <div class="col-sm-8">
+                            <select class="form-control drivers-select" disabled>
+                                @if (Model[i].ACTIVE_ID.ToString() == "-1")
+                                {
+                                    <option value="" disabled selected>Выберите водителя</option>
+                                }
+                                else
+                                {
+                                    <option selected>@Model[i].DRIVER_ID.ToString()</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group text-center">
+                        <button type="button" class="btn">Деактивировать</button>
+                    </div>
+                </form>
+            </div>
+        }
+    </div>
+    <div class="col-sm-3">
+        @for (int i = 2; i < Model.Count; i += 3)
+        {
+            <div id=@i class="active-object">
+                <input class="hidden-input-active" type="hidden" value=@Model[ i ].ACTIVE_ID.ToString()>
+                <div class="alert alert-info text-center">
+                    ТС бронирования @(i + 1)
+                </div>
+                <form class="form-horizontal" action="#">
+                    <div class="form-group">
+                        <input class="hidden-input-status" type="hidden" value=@Model[ i ].STATUS_ID.ToString()>
+                        <label class="col-sm-4 control-label">Веберите ТС: </label>
+                        <div class="col-sm-8">
+                            <select class="form-control cars-select" disabled>
+                                <option selected>@Model[i].CAR_ID.ToString()</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">Веберите водителя: </label>
+                        <div class="col-sm-8">
+                            <select class="form-control drivers-select" disabled>
+                                @if (Model[i].ACTIVE_ID.ToString() == "-1")
+                                {
+                                    <option value="" disabled selected>Выберите водителя</option>
+                                }
+                                else
+                                {
+                                    <option selected>@Model[i].DRIVER_ID.ToString()</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group text-center">
+                        <button type="button" class="btn">Деактивировать</button>
+                    </div>
+                </form>
+            </div>
+        }
+    </div>
+    <div class="col-sm-1"></div>
+</div>

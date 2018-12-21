@@ -1,0 +1,26 @@
+﻿@{
+    ViewBag.Title = "Доступ запрещен!";
+    Layout = "~/Views/Shared/_LogihLaoyut.cshtml";
+}
+
+<div class="row">
+    <div class="col-sm-1"></div>
+    <div class="col-sm-3"></div>
+    <div class="col-sm-4">
+        <h1 class="text-center">
+            Доступ запрещен!
+        </h1>
+        <div class="alert alert-danger text-center">
+            <h3>
+                Вы ввели некорректные данные!
+            </h3>
+        </div>
+        <div class="text-center">
+            <h4>
+                @Html.ActionLink("Вернуться на главную", "Index", "home")
+            </h4>
+        </div>
+    </div>
+    <div class="col-sm-3"></div>
+    <div class="col-sm-1"></div>
+</div>

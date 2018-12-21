@@ -1,0 +1,39 @@
+﻿@{
+    ViewBag.Title = "Бронирование автотранспорта для ОМК-ИТ";
+    Layout = "~/Views/Shared/_LogihLaoyut.cshtml";
+}
+
+<h1 class="text-center">
+    Авторизация
+</h1>
+
+<div class="row">
+    <div class="col-sm-1"></div>
+    <div class="col-sm-3"></div>
+    <div class="col-sm-4">
+        <form method="post" action="/Home/CheckUser" class="form-horizontal">
+            <div class="alert alert-info text-center">
+                Введите ваши данные:
+            </div>
+            <input type="hidden" value="-1" name="USER_ID" />
+            <input type="hidden" value="-1" name="FIO" />
+            <div class="form-group">
+                <label class="col-sm-4 control-label">Введите login: </label>
+                <div class="col-sm-8">
+                    <input class="form-control input-sm" type="text" name="LOGIN" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label">Введите пароль: </label>
+                <div class="col-sm-8">
+                    <input class="form-control input-sm" type="password" name="PASSWORD" />
+                </div>
+            </div>
+            <div class="form-group text-center">
+                <input type="submit" value="Отправить" />
+            </div>
+        </form>
+    </div>
+    <div class="col-sm-3"></div>
+    <div class="col-sm-1"></div>
+</div>
